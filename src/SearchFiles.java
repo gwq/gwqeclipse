@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -146,7 +147,39 @@ public class SearchFiles {
 		int start = 0;
 		int end = Math.min(numTotalHits, hitsPerPage);
 		
-		
+		while (true){
+			if (end > hits.length){
+				System.out.println("Only results 1 - " + hits.length +" of " + numTotalHits + " total matching documents collected.");
+				System.out.println("Collect more (y/n)?");
+				String line = in.readLine();
+				if (line.length() == 0||line.charAt(0) == 'n'){
+					break;
+				}
+				hits = searcher.search(query, numTotalHits).scoreDocs;
+			}
+			
+			end = Math.min(hits.length, start + hitsPerPage);
+			
+			for (int i = 0;i < end;i ++){
+				if (raw){
+					System.out.println("doc="+hits[i].doc+" score="+hits[i].score);
+					continue;
+				}
+				
+				Document doc = searcher.doc(hits[i].doc);
+				String path = doc.get("path");
+				if (path != null){
+					System.out.println((i+1) + ". "+path);
+					String title = doc.get("title");
+					if (title != null){
+						System.out.println(" Title: "+doc.get("title"));
+					}
+				}
+				else {
+					System.out.println((i + 1) + ". "+"No path for this document");
+				}
+			}
+		}
 		
 	}
 }
