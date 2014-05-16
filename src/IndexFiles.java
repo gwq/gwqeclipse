@@ -22,7 +22,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 /**
- * 
+ * IndexFiles
  * @author wuqiang.gwq
  *
  */
